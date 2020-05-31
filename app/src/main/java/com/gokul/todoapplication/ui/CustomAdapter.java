@@ -35,19 +35,15 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
     Context context;
     DatabaseHelper databaseHelper;
 
-
-
-
+    //Cosntructor for Adapter
     public CustomAdapter(Context context, ArrayList<Note> notes, DatabaseHelper databaseHelper){
         this.context=context;
         this.databaseHelper=databaseHelper;
-
         this.notes=notes;
 
     }
 
-
-
+    //Custom ViewHolder
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note_card, parent, false);
@@ -56,6 +52,7 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
         return myViewHolder;
     }
 
+    //Binding Views
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final Note note = notes.get(position);
@@ -140,6 +137,8 @@ class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.MyViewHolder> {
             status = itemView.findViewById(R.id.btn_status);
         }
     }
+
+    //Any Change in BindView function will send a Broadcast to UI
     public void trigger(){
         Intent intent = new Intent("trigger");
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);

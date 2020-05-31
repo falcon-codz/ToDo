@@ -47,6 +47,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
     }
 
+    public Cursor getPriorityNotes(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE "+COL_3+"=1",null);
+
+    }
+
     public Cursor getAllData(){
         SQLiteDatabase db = this.getWritableDatabase();
         return db.rawQuery("SELECT * FROM "+TABLE_NAME,null);
@@ -54,7 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public Cursor searchNotes(String key){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE NOTE LIKE '"+key+"%'",null);
+        return db.rawQuery("SELECT * FROM "+TABLE_NAME+" WHERE NOTE LIKE '%"+key+"%'",null);
 
     }
 

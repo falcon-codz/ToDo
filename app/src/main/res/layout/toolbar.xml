@@ -18,6 +18,16 @@
         android:backgroundTint="#f2f3f4"
         android:layout_marginRight="20sp"
         android:background="@drawable/ic_add_circle"/>
+    <ImageView
+        android:id="@+id/btn_priority_find"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:backgroundTint="#f2f3f4"
+        android:layout_marginRight="20sp"
+        android:background="@drawable/ic_priority_high"/>
 
     <ImageView
         android:id="@+id/btn_search"

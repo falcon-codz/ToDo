@@ -57,23 +57,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//--------------Initialization----------------------------------------------------------------
+        //creating instance of SQLiteDatabase
         databaseHelper = new DatabaseHelper(this);
         context = this;
-
+        //Instance of SwipeRefresh Layout
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
+        //Setting up ToolBar
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbar);
-        // get the reference of RecyclerView
+
+        //Setting up recyclerview adapter
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         linearLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        populate();
 
+        //Registering Broadcast listener to listen change in Note
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("trigger"));
 
+//---------------Handling UI -------------------
+        //Displaying all Notes
+        populate();
+
+        //Add Note on toolbar
         findViewById(R.id.btn_add_note).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
                 noteEditText.setText("");
 
+                //save note button inside dialog box
                 saveNoteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -100,12 +110,14 @@ public class MainActivity extends AppCompatActivity {
                                 priorityValue=1;
                             else
                                 priorityValue=0;
-                            Log.d("asdfNoteCreation",note+" "+priorityValue);
-                            boolean noteCreated = databaseHelper.insertNote(note,priorityValue);
 
+                            //Creating note calling database helper
+                            boolean noteCreated = databaseHelper.insertNote(note,priorityValue);
+                            //Handling responce from Database Helper
                             if(noteCreated==true){
                                 Toast.makeText(MainActivity.this, "Note created successfully", Toast.LENGTH_SHORT).show();
                                 alertDialog.dismiss();
+                                viewGroup.removeView(dialogView);
                                 populate();
                             }
                             else{
@@ -117,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }); }});
 
+        //handling Search notes button on Toolbar
             findViewById(R.id.btn_search).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -146,18 +159,35 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                populate();
-                if (swipeContainer.isRefreshing()) {
-                    swipeContainer.setRefreshing(false);
+            //Handling Find priority notes button on Toolbar
+            findViewById(R.id.btn_priority_find).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getPriorityNotes();
                 }
-            }
-        });
+            });
+
+            //Refreshing notes when clicked on Toolbar Title
+            toolbar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    populate();
+                }
+            });
+
+            //Swipe down to refresh the Recycler view adapter
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    populate();
+                    if (swipeContainer.isRefreshing()) {
+                        swipeContainer.setRefreshing(false);
+                    }
+                }
+            });
 
     }
-
+//-------------------- FUNCTIONS-----------------------------------------    //
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -170,9 +200,12 @@ public class MainActivity extends AppCompatActivity {
         populate();
     }
 
-    void populate(){
+    //Function to display all notes
+    private void populate(){
         Log.d("asdf","populate called");
         Cursor cursor = databaseHelper.getAllData();
+        if(cursor.getCount()==0)
+            Toast.makeText(context, "Uh oh! No notes found.", Toast.LENGTH_SHORT).show();
         ArrayList<Note> notes = new ArrayList<>();
         while (cursor.moveToNext()){
             Note note = new Note(cursor.getInt(0),cursor.
@@ -183,8 +216,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(customAdapter);
 
     }
-    void searchData(String text){
+
+    //Function to display Searched Notes
+    private void searchData(String text){
         Cursor cursor = databaseHelper.searchNotes(text);
+        if(cursor.getCount()==0){
+            Toast.makeText(context, "No Notes found for this search", Toast.LENGTH_SHORT).show();
+            populate();}
+        else{
         ArrayList<Note> notes = new ArrayList<>();
         while (cursor.moveToNext()){
             Note note = new Note(cursor.getInt(0),cursor.
@@ -193,7 +232,29 @@ public class MainActivity extends AppCompatActivity {
         }
         customAdapter = new CustomAdapter(MainActivity.this,notes,databaseHelper);
         recyclerView.setAdapter(customAdapter);
+        Toast.makeText(context, "Displaying Search Results", Toast.LENGTH_SHORT).show();
+        }
     }
+
+    //Function to Display Priority Notes
+    private void getPriorityNotes(){
+        Cursor cursor = databaseHelper.getPriorityNotes();
+        if(cursor.getCount()==0){
+            Toast.makeText(context, "No Priority Notes Found", Toast.LENGTH_SHORT).show();
+            populate();}
+        else{
+        ArrayList<Note> notes = new ArrayList<>();
+        while (cursor.moveToNext()){
+            Note note = new Note(cursor.getInt(0),cursor.
+                    getString(1),cursor.getInt(2),cursor.getInt(3));
+            notes.add(note);
+        }
+        customAdapter = new CustomAdapter(MainActivity.this,notes,databaseHelper);
+        recyclerView.setAdapter(customAdapter);
+        Toast.makeText(context, "Displaying Priority Notes", Toast.LENGTH_SHORT).show();}
+    }
+
+    //Populate elements when broadcast is received
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
