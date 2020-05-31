@@ -6,6 +6,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,18 +37,21 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
-    DatabaseHelper databaseHelper;
-    EditText noteEditText,editText;
+    private DatabaseHelper databaseHelper;
+    private EditText noteEditText,editText;
 
-    Switch aSwitch;
+    private Switch aSwitch;
 
-    Button saveNoteButton;
+    private Button saveNoteButton;
 
-    RecyclerView recyclerView;
-    LinearLayoutManager linearLayoutManager;
-    CustomAdapter customAdapter;
-    Context context;
-    int priorityValue;
+    private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+    private CustomAdapter customAdapter;
+    private Context context;
+    private int priorityValue;
+    private SwipeRefreshLayout swipeContainer;
+
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -56,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
 
         databaseHelper = new DatabaseHelper(this);
         context = this;
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.colorWhite));
         setSupportActionBar(toolbar);
@@ -139,6 +145,16 @@ public class MainActivity extends AppCompatActivity {
                     });
                 }
             });
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                populate();
+                if (swipeContainer.isRefreshing()) {
+                    swipeContainer.setRefreshing(false);
+                }
+            }
+        });
 
     }
 
