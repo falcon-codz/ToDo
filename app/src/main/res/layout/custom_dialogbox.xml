@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10sp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@drawable/rounded_bg"
+        android:padding="16dp">
+
+        <EditText
+            android:backgroundTint="@color/colorWhite"
+            android:id="@+id/note_text"
+            android:layout_width="350dp"
+            android:layout_height="56dp"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_bg"
+            android:ellipsize="start"
+            android:fontFamily="@font/rubik"
+            android:gravity="center"
+            android:hint="Start Typing ..."
+            android:singleLine="false" />
+
+        <Switch
+            android:id="@+id/switch_priority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:switchMinWidth="56dp"
+            android:text="Priority: "
+            android:padding="30dp"
+            android:fontFamily="@font/rubik"
+            android:checked="false"
+            android:textColor="@color/colorAccent"
+            android:textOff="OFF"
+            android:textOn="ON"/>
+
+        <Button
+            android:id="@+id/savenote"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/rounded_bg"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Save"
+
+            android:textColor="#FFF" />
+    </LinearLayout>
+</LinearLayout>
